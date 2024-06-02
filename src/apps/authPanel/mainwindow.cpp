@@ -28,10 +28,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_button_entrance_clicked()
 {
-   // const QString& username = ui->lineEdit_login->text();
-   // const QString& password = ui->lineEdit_password->text();
-     const QString& username = "Zubarev";
-     const QString& password = "qwerty123";
+    const QString& username = ui->lineEdit_login->text();
+    const QString& password = ui->lineEdit_password->text();
+    // const QString& username = "Zubarev";
+    // const QString& password = "qwerty123";
 
     bool isAuthenfication = dbworker.authenticateUser(username, password);
 

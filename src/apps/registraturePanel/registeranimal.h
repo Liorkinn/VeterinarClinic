@@ -1,0 +1,36 @@
+#ifndef REGISTERANIMAL_H
+#define REGISTERANIMAL_H
+
+#include <QDialog>
+#include <QMessageBox>
+
+#include "dbworker.h"
+
+namespace Ui {
+class registerAnimal;
+}
+
+class registerAnimal : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit registerAnimal(QVariantList p_listUsers, Dbworker *p_dbworker, QWidget *parent = nullptr);
+    ~registerAnimal();
+
+    void createUI(const QStringList &headers);
+    void setItemTableUsers();
+    void setItemComboBoxAnimals();
+
+private slots:
+    void on_button_registrationAnimal_clicked();
+
+private:
+    Ui::registerAnimal *ui;
+    QVariantList listUsers;
+    Dbworker *dbworker;
+
+    QMap<int, QString> animalTypes;
+};
+
+#endif // REGISTERANIMAL_H

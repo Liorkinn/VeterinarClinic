@@ -72,14 +72,55 @@
   <widget class="QPushButton" name="button_myAnimals">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>220</y>
-     <width>121</width>
+     <x>410</x>
+     <y>150</y>
+     <width>181</width>
      <height>25</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>Мои животные</string>
+    <string>История жалоб</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_Diagnos">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>190</y>
+     <width>181</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Итоговые диагнозы</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_changePassword">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>230</y>
+     <width>181</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Сменить пароль</string>
    </property>
   </widget>
  </widget>

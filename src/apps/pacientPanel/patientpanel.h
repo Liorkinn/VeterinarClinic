@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QDebug>
 #include "myanimals.h"
+#include "changepassword.h"
+
 class Dbworker;
 
 namespace Ui {
@@ -44,15 +46,18 @@ public:
     QString getAge          ()                          { return userdata.age; }
     QString getTelephone    ()                          { return userdata.telephone; }
 
-    void addAnimalsItem();
+    void addAnimalsItem     ();
 
 private slots:
     void on_button_myAnimals_clicked();
+
+    void on_button_changePassword_clicked();
 
 private:
     Ui::PatientPanel *ui;
     UserData userdata;
     MyAnimals *animals;
+    changePassword *changePwd;
     Dbworker* dbworker;
 };
 

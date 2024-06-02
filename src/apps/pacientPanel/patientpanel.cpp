@@ -51,3 +51,10 @@ void PatientPanel::on_button_myAnimals_clicked()
     animals = new MyAnimals(listAnimals);
     animals->show();
 }
+
+void PatientPanel::on_button_changePassword_clicked()
+{
+    changePwd = new changePassword(getUserID(), dbworker);
+    changePwd->setWindowTitle("Изменение пароля");
+    changePwd->show();
+}

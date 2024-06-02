@@ -1,6 +1,7 @@
 #include "dbworker.h"
 #include "patientpanel.h"
 #include "doctorpanel.h"
+#include "registraturepanel.h"
 
 Dbworker::Dbworker()
 {
@@ -51,14 +52,24 @@ bool Dbworker::authenticateUser(const QString& login, const QString& password) {
 
 
         if (accessLevelId == PATIENT) {
-            patientPanel = new PatientPanel(this); //error allocation
+            patientPanel = new PatientPanel(this);
+            patientPanel->setWindowTitle("Личный кабинет владельца животных");
             patientPanel->show();
             loadUserInfo(userId, accessLevelId);
         }
 
         if (accessLevelId == DOCTOR) {
-           // doctorPanel = new DoctorPanel(this); //error allocation
-           // doctorPanel->show();
+            doctorPanel = new DoctorPanel(this);
+            doctorPanel->show();
+            doctorPanel->setWindowTitle("Личный кабинет доктора");
+            loadUserInfo(userId, accessLevelId);
+        }
+
+        if (accessLevelId == REGISTRATURE) {
+            regPanel = new registraturePanel(this);
+            regPanel->show();
+            regPanel->setWindowTitle("Личный кабинет регистратуры");
+          //  loadUserInfo(userId, accessLevelId);
         }
         return true;
     } else {
@@ -71,11 +82,25 @@ void Dbworker::loadUserInfo(int userId, int accessLevelId)
 {
     QSqlQuery query(m_db);
     QString command;
-
+    qDebug() << "ACCESS:" << accessLevelId;
     if (accessLevelId == PATIENT) {
         command = "SELECT name, surname, patronymic, age, telephone FROM users WHERE id = :userId";
     } else if (accessLevelId == DOCTOR) {
-        command = "SELECT name, surname, patronymic, age, telephone, cabinet_id, post_id FROM users WHERE id = :userId";
+        command = QString("SELECT "
+                          "u.name, "
+                          "u.surname, "
+                          "u.patronymic, "
+                          "u.age, "
+                          "u.telephone, "
+                          "c.cabinet_number, "
+                          "c.cabinet_name, "
+                          "pt.post_type "
+                          "FROM "
+                          "users u "
+                          "JOIN doctors d ON u.id = d.user_id "
+                          "JOIN cabinets c ON d.cabinet_id = c.id "
+                          "JOIN post_type pt ON d.post_id = pt.id "
+                          "WHERE u.id = :userId");
     }
 
     if (!query.prepare(command)) {
@@ -97,18 +122,13 @@ void Dbworker::loadUserInfo(int userId, int accessLevelId)
         QString age = query.value(3).toString();
         QString telephone = query.value(4).toString();
 
-        if (accessLevelId == DOCTOR) {
-            int cabinetId = query.value(5).toInt();
-            int postId = query.value(6).toInt();
-            // Здесь можно загрузить дополнительную информацию о кабинете и должности, если это необходимо
-        }
-
-        // Передаем данные в форму
-        // Например, если у вас есть функция setUserInfo в форме
         if (accessLevelId == PATIENT) {
             patientPanel->setUserData(userId, name, surname, patronymic, age, telephone);
         } else if (accessLevelId == DOCTOR) {
-            //doctorPanel->setUserInfo(surname, name, patronymic, age, telephone);
+            QString cabinetNumber = query.value(5).toString();
+            QString cabinetName = query.value(6).toString();
+            QString postType = query.value(7).toString();
+            doctorPanel->setUserData(userId, name, surname, patronymic, age, telephone, cabinetNumber, cabinetName, postType);
         }
     }
 }
@@ -147,43 +167,121 @@ QVariantList Dbworker::loadPatientAnimals(int userId) {
     return animalsList;
 }
 
-//void Dbworker::loadPatientAnimals(int userId) {
-//    QSqlQuery query(m_db);
-//    QString command = "SELECT a.id, a.name, a.animal_type_id, k.animal_type, a.sympthom FROM animals_patients a "
-//                      "JOIN kind_animals k ON a.animal_type_id = k.id "
-//                      "WHERE a.user_id = :userId";
+bool Dbworker::changeUserPassword(int userId, const QString& oldPassword, const QString& newPassword) {
 
-//    if (!query.prepare(command)) {
-//        qDebug() << "Failed to prepare query:" << query.lastError();
-//        return;
-//    }
+    if (!checkUserPassword(userId, oldPassword)) {
+        qDebug() << "Incorrect old password.";
+        return false;
+    }
 
-//    query.bindValue(":userId", userId);
+    QSqlQuery query(m_db);
+    query.prepare("UPDATE public.users SET password = :newPassword WHERE id = :userId");
+    query.bindValue(":newPassword", newPassword);
+    query.bindValue(":userId", userId);
 
-//    if (!query.exec()) {
-//        qDebug() << "Failed to execute query:" << query.lastError();
-//        return;
-//    }
+    if (!query.exec()) {
+        qDebug() << "Failed to update password:" << query.lastError();
+        return false;
+    }
+    return true;
+}
 
-//    // Очищаем предыдущий список животных, если он есть
-//    // Например, если у вас есть функция clearAnimalList в форме
-//    // patientPanel->clearAnimalList();
+bool Dbworker::checkUserPassword(int userId, const QString& oldPassword) {
 
-//    // Заполняем список животных
-//    while (query.next()) {
-//        int animalId = query.value(0).toInt();
-//        QString animalName = query.value(1).toString();
-//        int animalTypeId = query.value(2).toInt();
-//        QString animalType = query.value(3).toString();
-//        QString symptom = query.value(4).toString();
+    QSqlQuery query(m_db);
+    query.prepare("SELECT password FROM public.users WHERE id = :userId");
+    query.bindValue(":userId", userId);
 
-//        qDebug() << animalId;
-//        qDebug() << animalName;
-//        qDebug() << animalTypeId;
-//        qDebug() << animalType;
-//        qDebug() << symptom;
-//        // Добавляем информацию о животном в форму
-//        // Например, если у вас есть функция addAnimalToListView в форме
-//        // patientPanel->addAnimalToListView(animalId, animalName, animalType, symptom);
-//    }
-//}
+    if (!query.exec() || !query.next()) {
+        qDebug() << "Failed to fetch user password:" << query.lastError();
+        return false;
+    }
+
+    QString storedPassword = query.value(0).toString();
+
+    return bool (storedPassword == oldPassword);
+}
+
+bool Dbworker::registerPatient(const QString& name, const QString& surname, const QString& patronymic, int age, const QString& telephone, const QString& login, const QString& password) {
+
+    QSqlQuery query(m_db);
+
+    query.prepare("INSERT INTO public.users (name, surname, patronymic, age, telephone, login, password, access_level_id) "
+                  "VALUES (:name, :surname, :patronymic, :age, :telephone, :login, :password, 1)");
+
+    query.bindValue(":name", name);
+    query.bindValue(":surname", surname);
+    query.bindValue(":patronymic", patronymic);
+    query.bindValue(":age", age);
+    query.bindValue(":telephone", telephone);
+    query.bindValue(":login", login);
+    query.bindValue(":password", password);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to register patient:" << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool Dbworker::registerAnimal(int userId, int animalTypeId, const QString& name, const QString& symptom) {
+
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO public.animals_patients (user_id, animal_type_id, name, sympthom) "
+                  "VALUES (:userId, :animalTypeId, :name, :symptom)");
+    query.bindValue(":userId", userId);
+    query.bindValue(":animalTypeId", animalTypeId);
+    query.bindValue(":name", name);
+    query.bindValue(":symptom", symptom);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to register animal:" << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+QVariantList Dbworker::getPatientData() {
+
+    QVariantList patientList;
+    QSqlQuery query(m_db);
+
+    query.prepare("SELECT id, name, surname, patronymic, age, telephone FROM public.users WHERE access_level_id = 1"); // Предполагаем, что access_level_id = 1 для пациентов
+
+    if (!query.exec()) {
+        qDebug() << "Failed to execute query:" << query.lastError();
+        return patientList;
+    }
+
+    while (query.next()) {
+        QVariantMap patientData;
+        patientData["id"] = QString::number(query.value(0).toInt());
+        patientData["name"] = query.value(1).toString();
+        patientData["surname"] = query.value(2).toString();
+        patientData["patronymic"] = query.value(3).toString();
+        patientData["age"] = QString::number(query.value(4).toInt());
+        patientData["telephone"] = query.value(5).toString();
+        patientList.append(patientData);
+    }
+    return patientList;
+}
+
+QMap<int, QString> Dbworker::getAnimalTypes() {
+
+    QMap<int, QString> animalTypes;
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id, animal_type FROM kind_animals");
+
+    if (!query.exec()) {
+        qDebug() << "Failed to execute query:" << query.lastError();
+        return animalTypes;
+    }
+
+    while (query.next()) {
+        int id = query.value(0).toInt();
+        QString typeName = query.value(1).toString();
+        animalTypes[id] = typeName;
+    }
+    return animalTypes;
+}
