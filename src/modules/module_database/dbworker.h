@@ -2,8 +2,10 @@
 #define DBWORKER_H
 
 #include <QSqlDatabase>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QDateTime>
 #include <QDebug>
 
 class PatientPanel;
@@ -33,7 +35,12 @@ public:
     bool registerAnimal(int userId, int animalTypeId, const QString &name, const QString &symptom);
     QVariantList getPatientData();
     QMap<int, QString> getAnimalTypes();
-
+    bool bookAppointment(int animalId, int doctorId, const QDateTime &date);
+    QVariantList getAllAnimalsWithOwners();
+    QVariantList getAllDoctors();
+    bool isDoctorBusy(int doctorId, const QDateTime &date);
+    QDateTime getLastDoctorVisitDate(int doctorId);
+    bool isDoctorAvailable(int doctorId, const QDateTime &selectedDateTime);
 private:
     QSqlDatabase m_db;
     PatientPanel *patientPanel;

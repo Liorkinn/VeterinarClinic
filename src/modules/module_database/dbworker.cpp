@@ -285,3 +285,130 @@ QMap<int, QString> Dbworker::getAnimalTypes() {
     }
     return animalTypes;
 }
+
+bool Dbworker::isDoctorBusy(int doctorId, const QDateTime& date) {
+    QSqlQuery query(m_db);
+    QString sql = "SELECT COUNT(*) FROM appointments WHERE doctor_id = :doctor_id AND date BETWEEN :start_time AND :end_time";
+    query.prepare(sql);
+    query.bindValue(":doctor_id", doctorId);
+    query.bindValue(":start_time", date);
+    query.bindValue(":end_time", date.addSecs(3600));
+
+    if (!query.exec()) {
+        qDebug() << "Error: check doctor busy failed";
+        qDebug() << query.lastError().text();
+        return true; // Возвращаем true, чтобы записать животного, если не удается проверить занятость
+    }
+
+    query.next();
+    int count = query.value(0).toInt();
+    return count > 0;
+}
+
+bool Dbworker::bookAppointment(int animalId, int doctorId, const QDateTime& date) {
+
+    if (isDoctorBusy(doctorId, date)) {
+            return false;
+        }
+
+        QSqlQuery query(m_db);
+        query.prepare("INSERT INTO appointments (animal_id, doctor_id, date) VALUES (:animal_id, :doctor_id, :date)");
+        query.bindValue(":animal_id", animalId);
+        query.bindValue(":doctor_id", doctorId);
+        query.bindValue(":date", date);
+
+        if (!query.exec()) {
+            qDebug() << "Error: insert failed";
+            qDebug() << query.lastError().text();
+        } else {
+            qDebug() << "Record added successfully!";
+        }
+    return true;
+}
+
+QVariantList Dbworker::getAllDoctors() {
+
+    QSqlQuery query(m_db);
+    QVariantList resultList;
+
+    QString command = "SELECT d.id AS doctor_id, u.name AS doctor_name, u.surname AS doctor_surname, p.post_type AS doctor_post, c.cabinet_number AS cabinet_number, u.telephone AS telephone "
+                  "FROM doctors d "
+                  "JOIN users u ON d.user_id = u.id "
+                  "JOIN post_type p ON d.post_id = p.id "
+                  "JOIN cabinets c ON d.cabinet_id = c.id";
+
+    if (!query.exec(command)) {
+        qDebug() << "Error: query failed";
+        qDebug() << query.lastError().text();
+    } else {
+        while (query.next()) {
+            QVariantMap result;
+            result["doctor_id"] = query.value(0);
+            result["doctor_name"] = query.value(1);
+            result["doctor_surname"] = query.value(2);
+            result["doctor_post"] = query.value(3);
+            result["cabinet_number"] = query.value(4);
+            result["telephone"] = query.value(5);
+            resultList.append(result);
+        }
+    }
+    return resultList;
+}
+
+QVariantList Dbworker::getAllAnimalsWithOwners() {
+    QSqlQuery query(m_db);
+    QVariantList resultList;
+
+    QString sql = "SELECT a.id AS animal_id, a.name AS animal_name, a.sympthom, u.name AS owner_name, u.surname AS owner_surname, u.telephone AS telephone, k.animal_type AS animal_type "
+                  "FROM animals_patients a "
+                  "JOIN users u ON a.user_id = u.id "
+                  "JOIN kind_animals k ON a.animal_type_id = k.id";
+
+    if (!query.exec(sql)) {
+        qDebug() << "Error: query failed";
+        qDebug() << query.lastError().text();
+    } else {
+        while (query.next()) {
+            QVariantMap result;
+            result["animal_id"] = query.value(0);
+            result["animal_name"] = query.value(1);
+            result["sympthom"] = query.value(2);
+            result["owner_name"] = query.value(3);
+            result["owner_surname"] = query.value(4);
+            result["owner_telephone"] = query.value(5);
+            result["animal_type"] = query.value(6);
+            resultList.append(result);
+        }
+    }
+
+    return resultList;
+}
+
+bool Dbworker::isDoctorAvailable(int doctorId, const QDateTime& selectedDateTime) {
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT MAX(a.date) FROM appointments a "
+                  "WHERE a.doctor_id = :doctorId");
+    query.bindValue(":doctorId", doctorId);
+
+    if (!query.exec()) {
+        qDebug() << "Error: query execution failed";
+        return false;
+    }
+
+    // Обработка результатов запроса
+    if (query.next()) {
+        QDateTime lastVisitDate = query.value(0).toDateTime();
+        // Добавляем 1 час к последнему визиту
+        QDateTime lastVisitPlusOneHour = lastVisitDate.addSecs(3600);
+
+        // Сравниваем с выбранным временем
+        if (lastVisitPlusOneHour < selectedDateTime) {
+            return true; // Доктор доступен, так как последний визит + 1 час меньше выбранного времени
+        } else {
+            return false; // Доктор недоступен, так как последний визит + 1 час не меньше выбранного времени
+        }
+    } else {
+        return true; // Если нет записей о визитах, то доктор доступен
+    }
+}

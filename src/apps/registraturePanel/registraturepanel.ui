@@ -68,7 +68,7 @@
     <string>Зарегистрировать животного</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="button_registerVisit">
    <property name="geometry">
     <rect>
      <x>30</x>

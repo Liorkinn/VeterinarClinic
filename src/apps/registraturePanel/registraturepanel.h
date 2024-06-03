@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "registerpatient.h"
 #include "registeranimal.h"
+#include "registervisit.h"
 
 class Dbworker;
 
@@ -24,11 +25,14 @@ private slots:
 
     void on_button_registerAnimal_clicked();
 
+    void on_button_registerVisit_clicked();
+
 private:
     Ui::registraturePanel *ui;
     Dbworker* dbworker;
     RegisterPatient *registerPatient;
     registerAnimal *regAnimal;
+    RegisterVisit *registerVisit;
 };
 
 #endif // REGISTRATUREPANEL_H

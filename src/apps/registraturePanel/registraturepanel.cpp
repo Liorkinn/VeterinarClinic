@@ -31,3 +31,11 @@ void registraturePanel::on_button_registerAnimal_clicked()
     regAnimal->setWindowTitle("Регистрация животного");
     regAnimal->show();
 }
+
+void registraturePanel::on_button_registerVisit_clicked()
+{
+    QVariantList listDoctors = dbworker->getAllDoctors();
+    QVariantList listAnimals = dbworker->getAllAnimalsWithOwners();
+    registerVisit = new RegisterVisit(dbworker, listDoctors, listAnimals);
+    registerVisit->show();
+}

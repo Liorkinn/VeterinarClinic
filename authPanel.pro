@@ -42,6 +42,7 @@ SOURCES += \
     src/apps/pacientPanel/patientpanel.cpp \
     src/apps/registraturePanel/registeranimal.cpp \
     src/apps/registraturePanel/registerpatient.cpp \
+    src/apps/registraturePanel/registervisit.cpp \
     src/apps/registraturePanel/registraturepanel.cpp \
     src/modules/module_database/dbworker.cpp
 
@@ -53,6 +54,7 @@ HEADERS += \
     src/apps/pacientPanel/patientpanel.h \
     src/apps/registraturePanel/registeranimal.h \
     src/apps/registraturePanel/registerpatient.h \
+    src/apps/registraturePanel/registervisit.h \
     src/apps/registraturePanel/registraturepanel.h \
     src/modules/module_database/dbworker.h
 
@@ -64,6 +66,7 @@ FORMS += \
     src/apps/pacientPanel/patientpanel.ui \
     src/apps/registraturePanel/registeranimal.ui \
     src/apps/registraturePanel/registerpatient.ui \
+    src/apps/registraturePanel/registervisit.ui \
     src/apps/registraturePanel/registraturepanel.ui
 
 INCLUDEPATH += $${DIR_MODULES}/module_database
