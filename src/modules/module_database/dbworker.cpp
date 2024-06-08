@@ -1,7 +1,9 @@
 #include "dbworker.h"
 #include "patientpanel.h"
 #include "doctorpanel.h"
+
 #include "registraturepanel.h"
+
 
 Dbworker::Dbworker()
 {
@@ -412,3 +414,69 @@ bool Dbworker::isDoctorAvailable(int doctorId, const QDateTime& selectedDateTime
         return true; // Если нет записей о визитах, то доктор доступен
     }
 }
+
+QVariantList Dbworker::getDoctorAppointments(int doctorId) {
+    QVariantList appointmentsList;
+
+    QSqlQuery query(m_db);
+
+    query.prepare("SELECT a.id, a.date, ap.name AS animal_name, ka.animal_type AS animal_type, u.surname, u.name, u.patronymic, u.telephone, ap.sympthom "
+                      "FROM appointments a "
+                      "JOIN animals_patients ap ON a.animal_id = ap.id "
+                      "JOIN kind_animals ka ON ap.animal_type_id = ka.id "
+                      "JOIN users u ON ap.user_id = u.id "
+                      "WHERE a.doctor_id = (SELECT id FROM doctors WHERE user_id = :doctorId) "
+                      "AND a.id NOT IN (SELECT appointment_id FROM visits WHERE dyagnosis IS NOT NULL)");
+
+
+    query.bindValue(":doctorId", doctorId);
+
+    if (!query.exec()) {
+        qDebug() << "Error: query execution failed";
+        return appointmentsList;
+    }
+
+    // Заполнение списка данными из запроса
+    while (query.next()) {
+        qDebug() << "da";
+        QVariantMap appointment;
+        appointment["id"] = query.value(0).toInt();
+        qDebug() << query.value(0).toInt();
+        appointment["date"] = query.value(1).toString();
+        appointment["animal_name"] = query.value(2).toString();
+        appointment["animal_type"] = query.value(3).toString();
+        appointment["surname"] = query.value(4).toString();
+        appointment["name"] = query.value(5).toString();
+        appointment["patronymic"] = query.value(6).toString();
+        appointment["telephone"] = query.value(7).toString();
+        appointment["sympthom"] = query.value(8).toString();
+        appointmentsList.append(appointment);
+    }
+    return appointmentsList;
+}
+
+
+bool Dbworker::addVisitWithDiagnosis(int appointmentId, const QString& diagnosis) {
+        QSqlQuery query(m_db);
+        query.prepare("INSERT INTO visits (appointment_id, dyagnosis) VALUES (:appointmentId, :diagnosis)");
+        query.bindValue(":appointmentId", appointmentId);
+        query.bindValue(":diagnosis", diagnosis);
+
+        if (!query.exec()) {
+            qDebug() << "Error: query execution failed" << query.lastError();
+            return false;
+        }
+
+        return true;
+}
+
+
+
+
+
+
+
+
+
+
+

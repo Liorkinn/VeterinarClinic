@@ -68,7 +68,7 @@ void RegisterVisit::createUIDoctors(const QStringList &headers)
     ui->tableWidget_doctors->horizontalHeader()->resizeSection(2, 120);
     ui->tableWidget_doctors->horizontalHeader()->resizeSection(3, 140);
     ui->tableWidget_doctors->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidget_doctors->setColumnHidden(0, true);
+    //ui->tableWidget_doctors->setColumnHidden(0, true);
     ui->tableWidget_doctors->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget_doctors->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget_doctors->setEditTriggers(QAbstractItemView::NoEditTriggers);

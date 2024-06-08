@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QDebug>
 
+class MainWindow; //***
 class PatientPanel;
 class DoctorPanel;
 class registraturePanel;
@@ -41,6 +42,9 @@ public:
     bool isDoctorBusy(int doctorId, const QDateTime &date);
     QDateTime getLastDoctorVisitDate(int doctorId);
     bool isDoctorAvailable(int doctorId, const QDateTime &selectedDateTime);
+    QVariantList getDoctorAppointments(int doctorId);
+    bool addVisitWithDiagnosis(int appointmentId, const QString &diagnosis);
+    bool deleteAppointment(int appointmentId);
 private:
     QSqlDatabase m_db;
     PatientPanel *patientPanel;

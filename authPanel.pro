@@ -36,7 +36,9 @@ INCLUDEPATH += $${DIR_MODULES}
 SOURCES += \
     src/apps/authPanel/main.cpp \
     src/apps/authPanel/mainwindow.cpp \
+    src/apps/doctorPanel/appointmentspanel.cpp \
     src/apps/doctorPanel/doctorpanel.cpp \
+    src/apps/doctorPanel/dyagnosispanel.cpp \
     src/apps/pacientPanel/changepassword.cpp \
     src/apps/pacientPanel/myanimals.cpp \
     src/apps/pacientPanel/patientpanel.cpp \
@@ -48,7 +50,9 @@ SOURCES += \
 
 HEADERS += \
     src/apps/authPanel/mainwindow.h \
+    src/apps/doctorPanel/appointmentspanel.h \
     src/apps/doctorPanel/doctorpanel.h \
+    src/apps/doctorPanel/dyagnosispanel.h \
     src/apps/pacientPanel/changepassword.h \
     src/apps/pacientPanel/myanimals.h \
     src/apps/pacientPanel/patientpanel.h \
@@ -60,7 +64,9 @@ HEADERS += \
 
 FORMS += \
     src/apps/authPanel/mainwindow.ui \
+    src/apps/doctorPanel/appointmentspanel.ui \
     src/apps/doctorPanel/doctorpanel.ui \
+    src/apps/doctorPanel/dyagnosispanel.ui \
     src/apps/pacientPanel/changepassword.ui \
     src/apps/pacientPanel/myanimals.ui \
     src/apps/pacientPanel/patientpanel.ui \

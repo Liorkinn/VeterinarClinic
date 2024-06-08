@@ -70,6 +70,19 @@
     </item>
    </layout>
   </widget>
+  <widget class="QPushButton" name="button_totalAppointments">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>160</y>
+     <width>131</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Текущие записи</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

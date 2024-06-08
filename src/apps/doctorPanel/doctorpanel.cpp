@@ -3,9 +3,10 @@
 
 #include "dbworker.h"
 
-DoctorPanel::DoctorPanel(Dbworker *dbworker, QWidget *parent) :
+DoctorPanel::DoctorPanel(Dbworker *p_dbworker, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DoctorPanel)
+    ui(new Ui::DoctorPanel),
+    dbworker(p_dbworker)
 {
     ui->setupUi(this);
 }
@@ -53,3 +54,19 @@ DoctorPanel::~DoctorPanel()
 {
     delete ui;
 }
+
+void DoctorPanel::on_button_totalAppointments_clicked()
+{
+    QVariantList totalAppointments = dbworker->getDoctorAppointments(getUserID());
+    qDebug() << "USERID: " << getUserID();
+    if (totalAppointments.isEmpty()) {
+        return;
+    }
+
+    appointPanel = new appointmentsPanel(getUserID(), dbworker, totalAppointments);
+    appointPanel->exec();
+}
+
+
+
+
