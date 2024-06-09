@@ -21,6 +21,9 @@ public:
 private slots:
     void on_button_registratePatient_clicked();
 
+/*  Переменные
+ * - dbworker - объект для работы с БД.
+*/
 private:
     Ui::RegisterPatient *ui;
     Dbworker *dbworker;

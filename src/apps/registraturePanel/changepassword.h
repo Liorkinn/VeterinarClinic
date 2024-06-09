@@ -18,16 +18,8 @@ public:
     explicit changePassword(int p_userId, Dbworker* p_dbworker, QWidget *parent = nullptr);
     ~changePassword();
 
-/*  Функция сеттер
- * - setUserId - установка ид пользователя.
-*/
-public:
     void setUserId      (int p_userID)      { userId = p_userID; }
 
-/*  Функция геттер
- * - setUserId - получение ид пользователя.
-*/
-public:
     int getUserId       ()                  { return userId; }
 
 private slots:

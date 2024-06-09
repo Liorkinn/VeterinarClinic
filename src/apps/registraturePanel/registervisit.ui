@@ -60,8 +60,13 @@
    </item>
    <item>
     <widget class="QPushButton" name="button_registerVisit">
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>Записать</string>
+      <string>Записать на прием</string>
      </property>
     </widget>
    </item>

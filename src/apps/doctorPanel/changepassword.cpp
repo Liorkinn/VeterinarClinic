@@ -6,7 +6,6 @@ changePassword::changePassword(int p_userId, Dbworker *p_dbworker, QWidget *pare
     ui(new Ui::changePassword)
 {
     ui->setupUi(this);
-    this->setFixedSize(274, 109);
     dbworker = p_dbworker;
     setUserId(p_userId);
 }
@@ -28,7 +27,7 @@ void changePassword::on_button_setPassword_clicked()
 
     bool success = dbworker->changeUserPassword(getUserId(), oldPassword, newPassword); // Замените 1 на id нужного пользователя
     if (success) {
-        QMessageBox::information(0, "Изменение пароля", "Пароль успешно изменен.");
+        QMessageBox::warning(0, "Изменение пароля", "Пароль успешно изменен.");
     } else {
         QMessageBox::warning(0, "Изменение пароля", "Пароль не изменен.");
     }

@@ -14,6 +14,11 @@ class MyAnimals : public QDialog
 public:
     explicit MyAnimals(QVariantList p_listAnimals, QWidget *parent = nullptr);
     ~MyAnimals();
+
+/*  Функции
+ * - createUI - создание таблицы со стилями.
+ * - setAnimalsItem - заполнение таблицы значениями животных.
+*/
     void createUI(const QStringList &headers);
     void setAnimalsItem();
 

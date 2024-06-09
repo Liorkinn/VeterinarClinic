@@ -7,7 +7,7 @@ MyAnimals::MyAnimals(QVariantList p_listAnimals, QWidget *parent) :
 {
     ui->setupUi(this);
     listAnimals = p_listAnimals;
-
+    this->setWindowTitle("Жалобы моих животных");
     this->createUI(QStringList()  << ( "ID" )
                                   << ( "Кличка" )
                                   << ( "ID животного" )

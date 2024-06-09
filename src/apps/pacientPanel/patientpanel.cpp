@@ -10,6 +10,7 @@ PatientPanel::PatientPanel(Dbworker *dbworker, QWidget *parent) :
     dbworker(dbworker)
 {
     ui->setupUi(this);
+    this->setFixedSize(439, 287);
 }
 
 PatientPanel::~PatientPanel()
@@ -58,3 +59,33 @@ void PatientPanel::on_button_changePassword_clicked()
     changePwd->setWindowTitle("Изменение пароля");
     changePwd->show();
 }
+
+void PatientPanel::on_button_Diagnos_clicked()
+{
+    QVariantList dyagnosisHistory =  dbworker->getVisitHistoryForUser(getUserID());
+
+    historyDyagnosis = new HistoryDyagnosisPanel(dyagnosisHistory);
+    historyDyagnosis->exec();
+}
+
+void PatientPanel::on_button_totalAppointments_clicked()
+{
+    QVariantList listAppoint = dbworker->getUserAppointments(getUserID());
+
+    if (listAppoint.isEmpty()) {
+        QMessageBox::warning(0, "Текущие записи", "Записи на прием не найдены");
+        return;
+    }
+    totalAppPanel = new totalAppointmentsPanel(dbworker, listAppoint);
+    totalAppPanel->exec();
+}
+
+
+
+
+
+
+
+
+
+

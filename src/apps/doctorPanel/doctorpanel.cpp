@@ -9,6 +9,7 @@ DoctorPanel::DoctorPanel(Dbworker *p_dbworker, QWidget *parent) :
     dbworker(p_dbworker)
 {
     ui->setupUi(this);
+    this->setFixedSize(480, 281);
 }
 
 void DoctorPanel::setUserData(const int& p_userID, const QString &p_name, const QString &p_surname, const QString &p_patronymic,
@@ -60,6 +61,7 @@ void DoctorPanel::on_button_totalAppointments_clicked()
     QVariantList totalAppointments = dbworker->getDoctorAppointments(getUserID());
     qDebug() << "USERID: " << getUserID();
     if (totalAppointments.isEmpty()) {
+        QMessageBox::warning(0, "Записи пациентов",  "Записи не найдены");
         return;
     }
 
@@ -67,6 +69,22 @@ void DoctorPanel::on_button_totalAppointments_clicked()
     appointPanel->exec();
 }
 
+void DoctorPanel::on_button_finalDyagnosis_clicked()
+{
+    QVariantList listDyagnosys = dbworker->getDoctorVisitDetails(getUserID());
 
+    if (listDyagnosys.isEmpty()) {
+        QMessageBox::warning(0, "Диагнозы",  "Диагнозы не найдены");
+        return;
+    }
 
+    checkDyagPanel = new checkDyagnosisPanel(listDyagnosys);
+    checkDyagPanel->exec();
+}
 
+void DoctorPanel::on_button_changePassword_clicked()
+{
+    changePwd = new changePassword(getUserID(), dbworker);
+    changePwd->setWindowTitle("Изменение пароля");
+    changePwd->show();
+}

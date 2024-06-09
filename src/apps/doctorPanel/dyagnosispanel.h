@@ -26,8 +26,8 @@ signals:
 
 private:
     Ui::dyagnosisPanel *ui;
-    Dbworker *dbworker;
-    int appointmentID;
+    Dbworker           *dbworker;
+    int                 appointmentID;
 };
 
 #endif // DYAGNOSISPANEL_H

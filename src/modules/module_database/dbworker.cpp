@@ -71,7 +71,7 @@ bool Dbworker::authenticateUser(const QString& login, const QString& password) {
             regPanel = new registraturePanel(this);
             regPanel->show();
             regPanel->setWindowTitle("Личный кабинет регистратуры");
-          //  loadUserInfo(userId, accessLevelId);
+            loadUserInfo(userId, accessLevelId);
         }
         return true;
     } else {
@@ -85,7 +85,7 @@ void Dbworker::loadUserInfo(int userId, int accessLevelId)
     QSqlQuery query(m_db);
     QString command;
     qDebug() << "ACCESS:" << accessLevelId;
-    if (accessLevelId == PATIENT) {
+    if (accessLevelId == PATIENT || accessLevelId == REGISTRATURE) {
         command = "SELECT name, surname, patronymic, age, telephone FROM users WHERE id = :userId";
     } else if (accessLevelId == DOCTOR) {
         command = QString("SELECT "
@@ -131,6 +131,8 @@ void Dbworker::loadUserInfo(int userId, int accessLevelId)
             QString cabinetName = query.value(6).toString();
             QString postType = query.value(7).toString();
             doctorPanel->setUserData(userId, name, surname, patronymic, age, telephone, cabinetNumber, cabinetName, postType);
+        } else if (accessLevelId == REGISTRATURE) {
+            regPanel->setUserData(userId, name, surname, patronymic, age, telephone);
         }
     }
 }
@@ -470,13 +472,122 @@ bool Dbworker::addVisitWithDiagnosis(int appointmentId, const QString& diagnosis
         return true;
 }
 
+QVariantList Dbworker::getDoctorVisitDetails(int userId) {
+
+    QSqlQuery query(m_db);
+
+    query.prepare("SELECT ka.animal_type, ap.name, u.name || ' ' || u.surname || ' ' || u.patronymic AS owner_info, u.telephone, v.dyagnosis "
+                  "FROM visits v "
+                  "JOIN appointments a ON v.appointment_id = a.id "
+                  "JOIN animals_patients ap ON a.animal_id = ap.id "
+                  "JOIN users u ON ap.user_id = u.id "
+                  "JOIN kind_animals ka ON ap.animal_type_id = ka.id "
+                  "JOIN doctors d ON a.doctor_id = d.id "
+                  "WHERE d.user_id = :userId");
+
+    query.bindValue(":userId", userId);
+
+    if (!query.exec()) {
+        qDebug() << "Error: query execution failed";
+        qDebug() << query.lastError().text();
+        return QVariantList();
+    }
+
+    QVariantList resultList;
+    while (query.next()) {
+        QVariantMap resultMap;
+        resultMap["animalType"] = query.value(0).toString();
+        resultMap["animalName"] = query.value(1).toString();
+        resultMap["ownerInfo"] = query.value(2).toString();
+        resultMap["ownerPhone"] = query.value(3).toString();
+        resultMap["diagnosis"] = query.value(4).toString();
+        resultList.append(resultMap);
+    }
+    return resultList;
+}
+
+QVariantList Dbworker::getVisitHistoryForUser(int userId) {
+
+    QSqlQuery query(m_db);
+
+    query.prepare("SELECT v.id AS visit_id, a.date AS visit_date, v.dyagnosis AS diagnosis, ka.animal_type, ap.name AS animal_name "
+                  "FROM visits v "
+                  "JOIN appointments a ON v.appointment_id = a.id "
+                  "JOIN animals_patients ap ON a.animal_id = ap.id "
+                  "JOIN kind_animals ka ON ap.animal_type_id = ka.id "
+                  "WHERE ap.user_id = :userId AND ap.user_id IN (SELECT id FROM users WHERE access_level_id = 1)");
+    query.bindValue(":userId", userId);
+
+    if (!query.exec()) {
+        qDebug() << "Error: query execution failed";
+        qDebug() << query.lastError().text();
+        return QVariantList();
+    }
+
+    QVariantList resultList;
+    while (query.next()) {
+        QVariantMap resultMap;
+        resultMap["visit_id"] = query.value(0).toInt();
+        resultMap["visit_date"] = query.value(1).toDateTime();
+        resultMap["diagnosis"] = query.value(2).toString();
+        resultMap["animal_type"] = query.value(3).toString();
+        resultMap["animal_name"] = query.value(4).toString();
+        resultList.append(resultMap);
+    }
+    return resultList;
+}
 
 
+QVariantList Dbworker::getUserAppointments(int userId) {
 
+    QSqlQuery query(m_db);
+    query.prepare("SELECT a.id AS appointment_id, a.date AS appointment_date, ka.animal_type, ap.name AS animal_name, "
+                  "u.name || ' ' || u.surname AS doctor_full_name, u.telephone AS doctor_phone, "
+                  "pt.post_type, c.cabinet_name "
+                  "FROM appointments a "
+                  "JOIN animals_patients ap ON a.animal_id = ap.id "
+                  "JOIN kind_animals ka ON ap.animal_type_id = ka.id "
+                  "JOIN doctors d ON a.doctor_id = d.id "
+                  "JOIN users u ON d.user_id = u.id "
+                  "JOIN post_type pt ON d.post_id = pt.id "
+                  "JOIN cabinets c ON d.cabinet_id = c.id "
+                  "WHERE ap.user_id = :userId AND a.id NOT IN (SELECT appointment_id FROM visits)");
 
+    query.bindValue(":userId", userId);
 
+    if (!query.exec()) {
+        qDebug() << "Error: query execution failed";
+        qDebug() << query.lastError().text();
+        return QVariantList();
+    }
 
+    QVariantList resultList;
+    while (query.next()) {
+        QVariantMap resultMap;
+        resultMap["appointment_id"] = query.value(0).toInt();
+        resultMap["appointment_date"] = query.value(1).toDateTime();
+        resultMap["animal_type"] = query.value(2).toString();
+        resultMap["animal_name"] = query.value(3).toString();
+        resultMap["doctor_full_name"] = query.value(4).toString();
+        resultMap["doctor_phone"] = query.value(5).toString();
+        resultMap["post_type"] = query.value(6).toString();
+        resultMap["cabinet_name"] = query.value(7).toString();
+        resultList.append(resultMap);
+    }
+    return resultList;
+}
 
+bool Dbworker::deleteAppointment(int appointmentId) {
 
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM appointments WHERE id = :appointmentId");
+    query.bindValue(":appointmentId", appointmentId);
 
+    if (!query.exec()) {
+        qDebug() << "Error: delete query execution failed";
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    return true;
+}
 

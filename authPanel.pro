@@ -37,11 +37,14 @@ SOURCES += \
     src/apps/authPanel/main.cpp \
     src/apps/authPanel/mainwindow.cpp \
     src/apps/doctorPanel/appointmentspanel.cpp \
+    src/apps/doctorPanel/checkdyagnosispanel.cpp \
     src/apps/doctorPanel/doctorpanel.cpp \
     src/apps/doctorPanel/dyagnosispanel.cpp \
     src/apps/pacientPanel/changepassword.cpp \
+    src/apps/pacientPanel/historydyagnosispanel.cpp \
     src/apps/pacientPanel/myanimals.cpp \
     src/apps/pacientPanel/patientpanel.cpp \
+    src/apps/pacientPanel/totalappointmentspanel.cpp \
     src/apps/registraturePanel/registeranimal.cpp \
     src/apps/registraturePanel/registerpatient.cpp \
     src/apps/registraturePanel/registervisit.cpp \
@@ -51,11 +54,14 @@ SOURCES += \
 HEADERS += \
     src/apps/authPanel/mainwindow.h \
     src/apps/doctorPanel/appointmentspanel.h \
+    src/apps/doctorPanel/checkdyagnosispanel.h \
     src/apps/doctorPanel/doctorpanel.h \
     src/apps/doctorPanel/dyagnosispanel.h \
     src/apps/pacientPanel/changepassword.h \
+    src/apps/pacientPanel/historydyagnosispanel.h \
     src/apps/pacientPanel/myanimals.h \
     src/apps/pacientPanel/patientpanel.h \
+    src/apps/pacientPanel/totalappointmentspanel.h \
     src/apps/registraturePanel/registeranimal.h \
     src/apps/registraturePanel/registerpatient.h \
     src/apps/registraturePanel/registervisit.h \
@@ -65,11 +71,14 @@ HEADERS += \
 FORMS += \
     src/apps/authPanel/mainwindow.ui \
     src/apps/doctorPanel/appointmentspanel.ui \
+    src/apps/doctorPanel/checkdyagnosispanel.ui \
     src/apps/doctorPanel/doctorpanel.ui \
     src/apps/doctorPanel/dyagnosispanel.ui \
     src/apps/pacientPanel/changepassword.ui \
+    src/apps/pacientPanel/historydyagnosispanel.ui \
     src/apps/pacientPanel/myanimals.ui \
     src/apps/pacientPanel/patientpanel.ui \
+    src/apps/pacientPanel/totalappointmentspanel.ui \
     src/apps/registraturePanel/registeranimal.ui \
     src/apps/registraturePanel/registerpatient.ui \
     src/apps/registraturePanel/registervisit.ui \

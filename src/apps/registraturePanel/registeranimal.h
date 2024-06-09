@@ -18,6 +18,13 @@ public:
     explicit registerAnimal(QVariantList p_listUsers, Dbworker *p_dbworker, QWidget *parent = nullptr);
     ~registerAnimal();
 
+
+/*  Функции
+ * - createUI - создание таблицы и её стилей.
+ * - setItemTableUsers - добавление итемов в таблицу.
+ * - setItemComboBoxAnimals - добавление данных животных в выпадающий список.
+*/
+public:
     void createUI(const QStringList &headers);
     void setItemTableUsers();
     void setItemComboBoxAnimals();
@@ -25,6 +32,11 @@ public:
 private slots:
     void on_button_registrationAnimal_clicked();
 
+
+/*  Переменные
+ * - listUsers - лист с данными пользователей.
+ * - dbworker - объект для работы с БД.
+*/
 private:
     Ui::registerAnimal *ui;
     QVariantList listUsers;
