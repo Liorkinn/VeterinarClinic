@@ -6,7 +6,7 @@ checkDyagnosisPanel::checkDyagnosisPanel(QVariantList p_listDyagnosis, QWidget *
     ui(new Ui::checkDyagnosisPanel)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("Просмотр диагнозов");
     listDyagnosis = p_listDyagnosis;
 
     this->createUI(QStringList()  << ( "Тип животного" )

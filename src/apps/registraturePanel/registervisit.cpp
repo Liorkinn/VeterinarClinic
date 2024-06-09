@@ -6,7 +6,7 @@ RegisterVisit::RegisterVisit(Dbworker *p_dbworker, QVariantList p_listDoctors, Q
     ui(new Ui::RegisterVisit)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("Запись на прием");
     dbworker = p_dbworker;
     listAnimals = p_listAnimals;
     listDoctors = p_listDoctors;
@@ -68,7 +68,7 @@ void RegisterVisit::createUIDoctors(const QStringList &headers)
     ui->tableWidget_doctors->horizontalHeader()->resizeSection(2, 120);
     ui->tableWidget_doctors->horizontalHeader()->resizeSection(3, 140);
     ui->tableWidget_doctors->horizontalHeader()->setStretchLastSection(true);
-    //ui->tableWidget_doctors->setColumnHidden(0, true);
+    ui->tableWidget_doctors->setColumnHidden(0, true);
     ui->tableWidget_doctors->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget_doctors->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget_doctors->setEditTriggers(QAbstractItemView::NoEditTriggers);
